@@ -8,6 +8,29 @@ No dashboards, no terminal babysitting. Just a group chat where one of the membe
 
 > Built for **Zero to Chat** (#ZeroToChat) with Claude Code and the [CometChat MCP](https://mcp.cometchat.com/mcp?ref=z2c) connector, registered in [`.mcp.json`](.mcp.json).
 
+## See it
+
+<p align="center"><img src="docs/screenshots/1-login.jpg" alt="Sign in to the Ship It group" width="880"></p>
+
+<p align="center"><img src="docs/screenshots/2-agent-working.jpg" alt="Pager working: live steps in the chat and the agent console" width="880"></p>
+<p align="center"><sub>Pager mid-run. The chat shows what it's doing right now; the console on the right keeps the full step list.</sub></p>
+
+<p align="center"><img src="docs/screenshots/4-shipped.jpg" alt="Approved result card and the shipped commit" width="880"></p>
+<p align="center"><sub>The result card after approval, and the "Shipped" confirmation with its commit hash.</sub></p>
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="docs/screenshots/5-phone.jpg" alt="Result card on a phone" width="300"></td>
+    <td align="center"><img src="docs/screenshots/6-phone-console.jpg" alt="Agent console drawer on a phone" width="300"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Result card on a phone</sub></td>
+    <td align="center"><sub>Agent console, slid in mid-run</sub></td>
+  </tr>
+</table>
+
+> These screenshots come from the app's built-in Demo mode (a simulated agent, no keys needed). The interface is the same one that runs against live CometChat and Claude Code.
+
 ## How it works
 
 ```mermaid
@@ -40,36 +63,7 @@ The agent is a real CometChat user. It reads and writes the group through the RE
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph Browser["Browser / phone (React + Vite)"]
-        UI["Chat UI<br/>messages, cards, console"]
-        SDK["CometChat JS SDK<br/>live messages, typing,<br/>presence, reactions"]
-    end
-
-    subgraph CometChat["CometChat cloud"]
-        G["Group: ship-it"]
-        U["Users: Hridya, Sam, Pager"]
-    end
-
-    subgraph Laptop["Your laptop"]
-        API["Express server<br/>/api/token, /api/status"]
-        BRAIN["brain.js<br/>poll, route, throttle"]
-        RUN["agent.js<br/>spawn Claude Code"]
-        WS[("workspace/<br/>demo app + own git history")]
-        PREV["/preview<br/>live-reloading page"]
-    end
-
-    UI --- SDK
-    SDK <--> G
-    UI -- "login token" --> API
-    API -- "mint auth token (REST key)" --> CometChat
-    BRAIN <-- "poll + send as agent (REST)" --> G
-    BRAIN --> RUN
-    RUN -- "claude -p" --> WS
-    WS --> PREV
-    PREV -. "reload on file change" .-> UI
-```
+![Agent Pager architecture](docs/architecture.svg)
 
 | Piece | What it does | Where |
 |---|---|---|
